@@ -1,0 +1,8 @@
+﻿@model TaskManagement.Models.DoTask
+
+<div id="PlaceHolderHere"></div>
+<button type="button" class="btn btn-primary" data-toggle="ajax-modal" data-target="#createTask"
+        data-url="@Url.Action("Create")">
+    Create task
+</button>
+@*@await Html.PartialAsync("_TreeViewPartial", Model)*@

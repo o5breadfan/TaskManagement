@@ -8,7 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace TaskManagement.Models
 {
     public enum Status
-    {
+    { 
         Assigned,
         InProgress,
         Suspended,
@@ -28,8 +28,6 @@ namespace TaskManagement.Models
         public double? FactTime { get; set; }
         public DateTime? DateFinished { get; set; }
         public int? ParentId { get; set; }
-        public virtual DoTask Parent { get; set; }
-        public virtual ICollection<DoTask> ParentIdNavigation { get; set; }
 
     }
 }

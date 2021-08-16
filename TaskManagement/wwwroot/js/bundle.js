@@ -1,4 +1,4 @@
-﻿$(function () {
+$(function () {
     var PlaceHolderElement = $('#PlaceHolderHere');
     $('button[data-toggle="ajax-modal"]').click(function (event) {
         var url = $(this).data('url');

@@ -6,23 +6,25 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using TaskManagement.Models;
+using TaskManagement.Services;
 
 namespace TaskManagement.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private ApplicationContext _context;
+        private TaskService _taskService;
 
-        public HomeController(ILogger<HomeController> logger,ApplicationContext context)
+        public HomeController(ILogger<HomeController> logger,TaskService taskService)
         {
             _logger = logger;
-            _context = context;
+            _taskService = taskService;
         }
 
+        
         public IActionResult Index()
         {
-            return View();
+            return View(_taskService.GetListTasks());
         }
 
         public IActionResult Privacy()

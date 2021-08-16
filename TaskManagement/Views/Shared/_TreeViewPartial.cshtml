@@ -1,0 +1,18 @@
+﻿@model TaskManagement.Models.SeedTasks
+
+@if(Model.Tasks.Where(s => s.ParentId == Model.Seed).Any())
+{
+    <ul>
+        @foreach (var node in Model.Tasks)
+        {
+            if (node.ParentId == Model.Seed)
+            {
+                TaskManagement.Models.SeedTasks inner = new TaskManagement.Models.SeedTasks { Seed = node.Id, Tasks = Model.Tasks };
+                <li>
+                    <a href="?@node.Id">@node.Name</a>
+                    @await Html.PartialAsync("_TreeViewPartial", inner)
+                </li>
+            }
+        }
+    </ul>
+}
