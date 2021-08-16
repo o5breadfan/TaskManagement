@@ -20,7 +20,7 @@
             @RenderBody()
         </main>
     </div>
-
+    @await Html.PartialAsync("CreateOrEditTaskModalPartial")
     <footer class="border-top footer text-muted">
         @if (IsSectionDefined("Footer"))
         {
@@ -31,7 +31,8 @@
             @await Html.PartialAsync("FooterPartial")
         }
     </footer>
+
     @await Html.PartialAsync("ScriptsPartial")
-    @await Html.PartialAsync("CreateTaskPartial") 
+
 </body>
 </html>

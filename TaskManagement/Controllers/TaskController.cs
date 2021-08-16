@@ -18,25 +18,25 @@ namespace TaskManagement.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View(_taskService.GetListTasks());
         }
 
-        [HttpGet]
-        public IActionResult Create()
+        public IActionResult CreateOrEditTask()
         {
-            DoTask task = new DoTask();
-            return PartialView("CreateTaskPartial", task);
+            return View(new DoTask());
         }
 
         [HttpPost]
-        public IActionResult Create(DoTask task)
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateOrEditTask(DoTask task)
         {
             if (ModelState.IsValid)
             {
-                if(_taskService.CreateTask(task))
-                    return View("Index");
+                _taskService.CreateTask(task);
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
+
             }
-            return View("Index");
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "CreateOrEditTask",task) });
         }
 
 

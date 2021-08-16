@@ -11,7 +11,10 @@
         <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
             <ul class="navbar-nav flex-grow-1">
                 <li class="nav-item">
-                    <button type="button" class="btn btn-primary" data-url="@Url.Action("Create")" data-target="#createTask" data-toggle="ajax-modal">Создать задачу</button>
+                    @*<button type="button" class="btn btn-primary" data-url="@Url.Action("Create")" data-target="#createTask" data-toggle="ajax-modal">Создать задачу</button>*@
+                    <button id="CreateOrEditTask" type="button" class="btn btn-primary" data-url="@Url.Action("CreateOrEditTask","Task",null)">
+                        Создать задачу
+                    </button>
                 </li>
             </ul>
         </div>
