@@ -1,12 +1,12 @@
 ﻿@model TaskManagement.Models.SeedTasks
 
-
+@await Html.PartialAsync("CreateOrEditTaskModalPartial")
 @*<button id="CreateOrEditTask" type="button" class="btn btn-primary" data-url="@Url.Action("CreateOrEditTask","Task",null)">
-    Create task
-</button>*@
-@if (Model != null)
-{
+        Create task
+    </button>*@
+@*@if (Model != null)*@
+@*  *@{
     <div id="TreeView">
         @await Html.PartialAsync("_TreeViewPartial", Model)
     </div>
-}
+@*  *@}
