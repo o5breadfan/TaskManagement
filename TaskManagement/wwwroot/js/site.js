@@ -1,29 +1,4 @@
-﻿$(function () {
-    var PlaceHolderElement = $('#PlaceHolderHere');
-    $('button[data-toggle="ajax-modal"]').click(function (event) {
-        var url = $(this).data('url');
-        $.get(url).done(function (data) {
-            PlaceHolderElement.html(data);
-            PlaceHolderElement.find('.modal').modal('show');
-        })
-    })
-
-    PlaceHolderElement.on('click', '[data-save="modal"]', function (event) {
-
-        var form = $(this).parents('.modal').find('form');
-        var actionUrl = form.attr('action');
-        var sendData = form.serialize();
-        $.post(actionUrl, sendData).done(function (data) {
-            PlaceHolderElement.find('.modal').modal('hide');
-        })
-    })
-
-})
-
-var createButton = document.getElementById("CreateOrEditTask");
-if (createButton) {
-    createButton.addEventListener("click", function () {
-        var url = $(this).data("url");
+﻿CreateEditTask = url => {
         $.ajax({
             type: "GET",
             url: url,
@@ -31,14 +6,11 @@ if (createButton) {
                 $("#form-modal .modal-body").html(res);
                 $("#form-modal").modal('show');
             }
-        })
-    }, true)
+        });
 }
 
-/*var ajaxForm = document.getElementById("AjaxForm");*/
-/*if (ajaxForm) {*/
-//ajaxForm.addEventListener("submit", function (ajaxForm) {
-ajaxForm = form => {
+
+SaveTaskInfo = form => {
         try {
             $.ajax({
                 type: "POST",
@@ -51,6 +23,7 @@ ajaxForm = form => {
                         $("#TreeView").html(res.html);
                         $("#form-modal .modal-body").html('');
                         $("#form-modal").modal('hide');
+                        $('#taskDetails').html('');
                     }
                     else
                         $("#form-modal .modal-body").html(res.html);
@@ -63,7 +36,46 @@ ajaxForm = form => {
         }
         catch (e) {
             console.log(e);
-    }
+        }
 
+    return false;
+}
+
+ShowTaskDetails = url => {
+    $.ajax({
+        type: "GET",
+        url: url,
+        success: function (res) {
+            $('#taskDetails').html(res);
+        },
+        error: function (res) {
+            console.log(res);
+        }
+    })
+}
+
+DeleteTask = form => {
+    if (confirm('Вы уверены, что хотите удалить запись ?')) {
+        try {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    $("#TreeView").html(res.html);
+                    $('#taskDetails').html('');
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+
+            })
+        }
+        catch {
+
+        }
+    }
     return false;
 }

@@ -1,0 +1,34 @@
+﻿@model TaskManagement.Models.DoTask
+@{Layout = null;}
+
+<form>
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        @Html.TextAreaFor(m => m.Description, 2, 20, new { @class = "form-control" })
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Executors" class="control-label"></label>
+        <input asp-for="Executors" class="form-control" />
+        <span asp-validation-for="Executors" class="text-danger"></span>
+    </div>
+
+</form>
+<button onclick="CreateEditTask('@Url.Action("CreateOrEditTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
+    Изменить задачу
+</button>
+<form asp-controller="Task" asp-action="DeleteTask" asp-route-id="@Model.Id" onsubmit="return DeleteTask(this);">
+    <input type="submit" value="Удалить задачу" class="btn btn-danger" />
+</form>
+<button onclick="CreateEditTask('@Url.Action("CreateSubTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
+    Добавить подзадачу
+</button>
+<button onclick="CreateEdit('@Url.Action("CreateOrEditTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
+    Изменить статус задачи
+</button>
+

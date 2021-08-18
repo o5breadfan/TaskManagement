@@ -21,6 +21,8 @@ namespace TaskManagement.Models
 
     public class DoTask
     {
+        private DateTime _localDate = DateTime.Now;
+        private Status _initStatus;
         [Key]
         public int Id { get; set; }
         [MaxLength(45)]
@@ -40,8 +42,10 @@ namespace TaskManagement.Models
         public string Executors { get; set; }
         [Required(ErrorMessage = "Поле обязательно для заполнения")]
         [Display(Name ="Дата регистрации задачи")]
-        public DateTime? DateRegister { get; set; }
-        public Status? Status { get; set; }
+        public DateTime DateRegister { get { return _localDate; } set { _localDate = value; } }
+        public Status Status { get { return _initStatus; } set { _initStatus = Models.Status.Assigned; } }
+        
+        [Display(Name = "Плановое время выполнения задачи (в часах)")]
         public double? PlanTime { get; set; }
         public double? FactTime { get; set; }
         public DateTime? DateFinished { get; set; }

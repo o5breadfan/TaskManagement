@@ -1,21 +1,81 @@
-$(function () {
-    var PlaceHolderElement = $('#PlaceHolderHere');
-    $('button[data-toggle="ajax-modal"]').click(function (event) {
-        var url = $(this).data('url');
-        $.get(url).done(function (data) {
-            PlaceHolderElement.html(data);
-            PlaceHolderElement.find('.modal').modal('show');
-        })
+CreateEditTask = url => {
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function (res) {
+                $("#form-modal .modal-body").html(res);
+                $("#form-modal").modal('show');
+            }
+        });
+}
+
+
+SaveTaskInfo = form => {
+        try {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    if (res.isValid) {
+                        $("#TreeView").html(res.html);
+                        $("#form-modal .modal-body").html('');
+                        $("#form-modal").modal('hide');
+                        $('#taskDetails').html('');
+                    }
+                    else
+                        $("#form-modal .modal-body").html(res.html);
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+
+            })
+        }
+        catch (e) {
+            console.log(e);
+        }
+
+    return false;
+}
+
+ShowTaskDetails = url => {
+    $.ajax({
+        type: "GET",
+        url: url,
+        success: function (res) {
+            $('#taskDetails').html(res);
+        },
+        error: function (res) {
+            console.log(res);
+        }
     })
+}
 
-    PlaceHolderElement.on('click', '[data-save="modal"]', function (event) {
+DeleteTask = form => {
+    if (confirm('Вы уверены, что хотите удалить запись ?')) {
+        try {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    $("#TreeView").html(res.html);
+                    $('#taskDetails').html('');
+                },
+                error: function (err) {
+                    console.log(err)
+                }
 
-        var form = $(this).parents('.modal').find('form');
-        var actionUrl = form.attr('action');
-        var sendData = form.serialize();
-        $.post(actionUrl, sendData).done(function (data) {
-            PlaceHolderElement.find('.modal').modal('hide');
-        })
-    })
+            })
+        }
+        catch {
 
-})
+        }
+    }
+    return false;
+}
