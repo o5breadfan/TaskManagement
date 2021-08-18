@@ -34,9 +34,22 @@ namespace TaskManagement.Services
 
         public bool CreateSubTask(DoTask model,int id)
         {
-            DoTask subTask = new DoTask { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = model.Status, PlanTime = model.PlanTime, ParentId = id};
-            _applicationContext.Add(subTask);
-            _applicationContext.SaveChanges();
+            var parentTask = GetTask(id);
+            if(parentTask.PlanTime < GetSumPlanTime(id)+model.PlanTime)
+            {
+                parentTask.PlanTime += (GetSumPlanTime(id) + model.PlanTime - parentTask.PlanTime);
+                DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = model.Status, PlanTime = model.PlanTime, ParentId = id };
+                _applicationContext.Update(parentTask);
+                _applicationContext.Add(subTask);
+                _applicationContext.SaveChanges();
+            }
+            else
+            {
+                DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = model.Status, PlanTime = model.PlanTime, ParentId = id };
+                _applicationContext.Add(subTask);
+                _applicationContext.SaveChanges();
+            }
+
             return true;
         }
 
@@ -63,6 +76,15 @@ namespace TaskManagement.Services
         public DoTask GetTask(int? id)
         {
             return _applicationContext.Tasks.Find(id);
+        }
+
+        public double GetSumPlanTime(int idParent)
+        {
+            double sum = 0;
+            List<DoTask> subTasks = _applicationContext.Tasks.Where(x => x.ParentId == idParent).ToList();
+            foreach (var task in subTasks)
+                sum += task.PlanTime;
+            return sum;
         }
     }
 }
