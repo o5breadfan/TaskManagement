@@ -4,31 +4,68 @@
 <form>
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+        <input asp-for="Name" class="form-control" disabled/>
     </div>
     <div class="form-group">
         <label asp-for="Description" class="control-label"></label>
-        @Html.TextAreaFor(m => m.Description, 2, 20, new { @class = "form-control" })
-        <span asp-validation-for="Description" class="text-danger"></span>
+        @*@Html.TextAreaFor(m => m.Description, 2, 20, new { @class = "form-control"})*@
+        <textarea asp-for="Description" cols="20" rows="2" class="form-control" disabled></textarea>
     </div>
     <div class="form-group">
         <label asp-for="Executors" class="control-label"></label>
-        <input asp-for="Executors" class="form-control" />
-        <span asp-validation-for="Executors" class="text-danger"></span>
+        <input asp-for="Executors" class="form-control" disabled/>
+    </div>
+    <div class="form-group">
+        <label asp-for="Status" class="control-label"></label>
+        <select asp-items="Html.GetEnumSelectList(typeof(Status))" disabled asp-for="@Model.Status" class="form-select"></select>
     </div>
 
 </form>
-<button onclick="CreateEditTask('@Url.Action("CreateOrEditTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
-    Изменить задачу
-</button>
-<form asp-controller="Task" asp-action="DeleteTask" asp-route-id="@Model.Id" onsubmit="return DeleteTask(this);">
-    <input type="submit" value="Удалить задачу" class="btn btn-danger" />
-</form>
-<button onclick="CreateEditTask('@Url.Action("CreateSubTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
-    Добавить подзадачу
-</button>
-<button onclick="CreateEdit('@Url.Action("CreateOrEditTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
-    Изменить статус задачи
-</button>
+
+<div class="row">
+    <div class="col-4">
+        <button onclick="CreateEditTask('@Url.Action("CreateOrEditTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
+            Изменить задачу
+        </button>
+    </div>
+    <div class="col-4">
+        <form asp-controller="Task" asp-action="DeleteTask" asp-route-id="@Model.Id" onsubmit="return DeleteTask(this);">
+            <input type="submit" value="Удалить задачу" class="btn btn-danger" />
+        </form>
+    </div>
+    <div class="col-4">
+        <button onclick="CreateEditTask('@Url.Action("CreateSubTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
+            Добавить подзадачу
+        </button>
+    </div>
+</div>
+<div class="row">
+    @switch(Model.Status)
+                {
+                    case Status.Assigned:
+                        break;
+                    case Status.InProgress:
+                        break;
+                    case Status.Suspended:
+                        break;
+                }
+                @if (Model.Status != Status.Done)
+    {
+        <div class="col-6">
+            <form asp-controller="Task" asp-action="ChangeStatus" asp-route-status="@Model.Status" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this)">
+                <input type="submit" value="Изменить статус задачи на @Model.Status" class="btn btn-primary" />
+            </form>
+        </div>
+        @if (Model.Status != Status.Suspended && Model.Status != Status.Assigned)
+            {
+            <div class="col-6">
+                <form asp-controller="Task" asp-action="PauseStatus" asp-route-status="@Model.Status" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this)">
+                    <input type="submit" value="Приостановить выполнение задачи" class="btn btn-primary" />
+                </form>
+            </div>
+        }
+    }
+</div>
+
+
 

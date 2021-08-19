@@ -18,15 +18,15 @@ namespace TaskManagement.Services
             _applicationContext = applicationContext;
         }
 
-        public SeedTasks GetListTasks()
+        public SeedTasksViewModel GetListTasks()
         {
-            SeedTasks model = new SeedTasks() { Seed = null, Tasks = _applicationContext.Tasks.ToList() };
+            SeedTasksViewModel model = new SeedTasksViewModel() { Seed = null, Tasks = _applicationContext.Tasks.ToList() };
             return model;
         }
 
         public bool CreateTask(DoTask model)
         {
-            DoTask task = new DoTask { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = model.Status, PlanTime = model.PlanTime };
+            DoTask task = new DoTask { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = Status.Assigned, PlanTime = model.PlanTime };
             _applicationContext.Add(task);
             _applicationContext.SaveChanges();
             return true;
@@ -34,18 +34,18 @@ namespace TaskManagement.Services
 
         public bool CreateSubTask(DoTask model,int id)
         {
-            var parentTask = GetTask(id);
-            if(parentTask.PlanTime < GetSumPlanTime(id)+model.PlanTime)
+            var parentTask = GetTask(model.ParentId);
+            //var parentTask1 = model.ParentId;
+            DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = Status.Assigned, PlanTime = model.PlanTime, ParentId = id };
+            if (parentTask.PlanTime < GetSumPlanTime(id)+model.PlanTime)
             {
                 parentTask.PlanTime += (GetSumPlanTime(id) + model.PlanTime - parentTask.PlanTime);
-                DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = model.Status, PlanTime = model.PlanTime, ParentId = id };
                 _applicationContext.Update(parentTask);
                 _applicationContext.Add(subTask);
                 _applicationContext.SaveChanges();
             }
             else
             {
-                DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = model.Status, PlanTime = model.PlanTime, ParentId = id };
                 _applicationContext.Add(subTask);
                 _applicationContext.SaveChanges();
             }
@@ -86,5 +86,21 @@ namespace TaskManagement.Services
                 sum += task.PlanTime;
             return sum;
         }
+
+        public void CompleteTask(int id)
+        {
+            var task = GetTask(id);
+            task.DateFinished = DateTime.Now;
+            task.FactTime = CalcFactTime(task.DateRegister, DateTime.Now);
+            _applicationContext.Update(task);
+            _applicationContext.SaveChanges();
+
+        }
+
+        public double CalcFactTime(DateTime dateRegister, DateTime dateFinished)
+        {
+            return Math.Round(dateFinished.Subtract(dateRegister).TotalHours);
+        }
+     
     }
 }

@@ -30,6 +30,7 @@ namespace TaskManagement
             services.AddControllersWithViews();
             services.AddMvc();
             services.AddScoped<TaskService>();
+            services.AddScoped<StatusService>();
 
         }
 

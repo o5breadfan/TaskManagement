@@ -1,4 +1,9 @@
-﻿@model TaskManagement.Models.SeedTasks
+﻿@model TaskManagement.ViewModels.SeedTasksViewModel
+
+@{
+    ViewBag.Title = "PlanerTask";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
 
 <div class="row">
     <div id="TreeView" class="col-6 border-end">
@@ -8,7 +13,9 @@
          }
     </div>
     <div class="col-6 border-start">
-        @await Html.PartialAsync("_DetailsPartial") 
+        <div id="taskDetails">
+
+        </div>
     </div>
         
 </div>

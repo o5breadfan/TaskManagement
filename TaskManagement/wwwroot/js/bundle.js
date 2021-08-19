@@ -73,6 +73,32 @@ DeleteTask = form => {
 
             })
         }
+        catch  {
+            
+        }
+    }
+    return false;
+}
+
+UpdateStatus = form => {
+    if (confirm('sadsa')) {
+        try {
+            $.ajax({
+                type: "POST",
+                url: form.action,
+                data: new FormData(form),
+                contentType: false,
+                processData: false,
+                success: function (res) {
+                    $("#TreeView").html(res.html);
+                    $('#taskDetails').html('');
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+
+            })
+        }
         catch {
 
         }

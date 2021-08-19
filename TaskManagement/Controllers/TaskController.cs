@@ -11,9 +11,11 @@ namespace TaskManagement.Controllers
     public class TaskController : Controller
     {
         private TaskService _taskService;
-        public TaskController(TaskService taskService)
+        private StatusService _statusService;
+        public TaskController(TaskService taskService, StatusService statusService)
         {
             _taskService = taskService;
+            _statusService = statusService;
         }
 
         public IActionResult Index()
@@ -97,6 +99,42 @@ namespace TaskManagement.Controllers
 
             }
             return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "CreateOrEditTask", model) });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangeStatus(Status status, int id)
+        {
+            switch (status)
+            {
+                case Status.Assigned:
+                    _statusService.UpdateStatus(Status.InProgress,id);
+                    break;
+                case Status.InProgress:
+                    _statusService.UpdateStatus(Status.Done, id);
+                    _taskService.CompleteTask(id);
+                    break;
+                case Status.Suspended:
+                    _statusService.UpdateStatus(Status.InProgress, id);
+                    break;
+            }
+            return Json(new { html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) }); ;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult PauseStatus(Status status, int id)
+        {
+            switch (status)
+            {
+                case Status.Assigned:
+                    _statusService.UpdateStatus(status, id);
+                    break;
+                case Status.InProgress:
+                    _statusService.UpdateStatus(Status.Suspended, id);
+                    break;
+            }
+            return Json(new { html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
         }
     }
 }
