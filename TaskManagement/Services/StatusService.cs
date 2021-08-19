@@ -9,19 +9,25 @@ namespace TaskManagement.Services
     public class StatusService
     {
         private ApplicationContext _applicationContext;
-        private TaskService _taskService;
 
-        public StatusService(ApplicationContext applicationContext, TaskService taskService)
+        public StatusService(ApplicationContext applicationContext)
         {
             _applicationContext = applicationContext;
-            _taskService = taskService;
         }
-        public void UpdateStatus(Status status, int id)
+        public void UpdateStatus(Status status, int? id)
         {
-            var task = _taskService.GetTask(id);
+            var task = _applicationContext.Tasks.Find(id);
             task.Status = status;
             _applicationContext.Update(task);
             _applicationContext.SaveChanges();
+        }
+
+        // проверка всех подзадач на завершенность
+        public bool CheckCompletionStatusSubTasks(int? parentId)
+        {
+            if (_applicationContext.Tasks.Where(x => x.ParentId == parentId).All(x => x.Status == Status.Done))
+                return true;
+            return false;
         }
     }
 }

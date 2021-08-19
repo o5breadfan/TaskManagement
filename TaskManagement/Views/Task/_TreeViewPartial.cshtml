@@ -9,7 +9,6 @@
             {
                 TaskManagement.ViewModels.SeedTasksViewModel inner = new TaskManagement.ViewModels.SeedTasksViewModel { Seed = node.Id, Tasks = Model.Tasks };
                 <li>
-                   @* @Html.ActionLink(@node.Name, "Details", "Task", new { id = @node.Id }, new { @class= "nodeItem" });*@
                     <a type="button" class = "nodeItem" onclick="ShowTaskDetails('@Url.Action("Details","Task", new { id = @node.Id})')">@node.Name</a>
                     @await Html.PartialAsync("_TreeViewPartial", inner)
                 </li>

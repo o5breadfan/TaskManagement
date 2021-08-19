@@ -11,8 +11,7 @@
         <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
             <ul class="navbar-nav flex-grow-1">
                 <li class="nav-item">
-                    @*<button type="button" class="btn btn-primary" data-url="@Url.Action("Create")" data-target="#createTask" data-toggle="ajax-modal">Создать задачу</button>*@
-                    <button type="button" onclick="CreateEditTask('@Url.Action("CreateOrEditTask","Task",null)')" class="btn btn-primary">
+                    <button type="button" onclick="CreateEditTask('@Url.Action("CreateTask","Task")')" class="btn btn-primary">
                         Создать задачу
                     </button>
                 </li>

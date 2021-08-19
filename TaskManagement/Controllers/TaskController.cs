@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TaskManagement.Models;
 using TaskManagement.Services;
+using TaskManagement.ViewModels;
 
 namespace TaskManagement.Controllers
 {
@@ -23,51 +24,49 @@ namespace TaskManagement.Controllers
             return View(_taskService.GetListTasks());
         }
 
-
-        public IActionResult CreateOrEditTask(int id = 0)
+        public IActionResult CreateTask()
         {
-            if (id == 0) 
-                return View(new DoTask());
-            else
-            {
-                var taskModel = _taskService.GetTask(id);
-                if (taskModel == null)
-                    return NotFound();
-                return View(taskModel);
-            }
+            return View(new DoTask());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateOrEditTask(int id, DoTask task)
+        public IActionResult CreateTask(DoTask task)
         {
             if (ModelState.IsValid)
             {
-                if(id == 0)
-                {
-                    _taskService.CreateTask(task);
-
-                }
-                else
-                {
-                    try
-                    {
-                        _taskService.UpdateTask(task);
-                    }
-                    catch(Exception)
-                    {
-                        throw;
-                    }
-                }
+                _taskService.CreateTask(task);
                 return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
-
             }
-            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "CreateOrEditTask",task) });
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "CreateTask",task) });
+        }
+
+        [HttpGet]
+        public IActionResult EditTask(int id)
+        {
+            var taskModel = _taskService.GetTask(id);
+            if (taskModel == null)
+                return NotFound();
+            return View(taskModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditTask(DoTask task, int id)
+        {
+            if (ModelState.IsValid)
+            {
+                _taskService.UpdateTask(task);
+                return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
+            }
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "EditTask",task) });
+
         }
 
         public IActionResult Details(int id)
         {
-            var model = _taskService.GetTask(id);
+            var task = _taskService.GetTask(id);
+            DetailViewModel model = new() { Id = task.Id, Name = task.Name, Description = task.Description, Executors = task.Executors, PlanTime = task.PlanTime, Status = task.Status, SubTasks = _taskService.GetSubTasksList(id) };
             return View(model);
         }
 
@@ -80,6 +79,7 @@ namespace TaskManagement.Controllers
             return NotFound();
         }
 
+        [HttpGet]
         public IActionResult CreateSubTask(int id)
         {
             var model = new DoTask() { ParentId = id };
@@ -92,7 +92,7 @@ namespace TaskManagement.Controllers
         {
             if(ModelState.IsValid)
             {
-                if (_taskService.CreateSubTask(model,id))
+                if (_taskService.CreateSubTask(model, id))
                     return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
                 else
                     return NotFound();
@@ -103,19 +103,24 @@ namespace TaskManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ChangeStatus(Status status, int id)
+        public IActionResult ChangeStatusAssign(int id)
         {
-            switch (status)
+            _statusService.UpdateStatus(Status.InProgress, id);
+            return Json(new { html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) }); ;
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ChangeStatusProgress(string button, int id)
+        {
+            switch (button)
             {
-                case Status.Assigned:
-                    _statusService.UpdateStatus(Status.InProgress,id);
-                    break;
-                case Status.InProgress:
+                case "done":
                     _statusService.UpdateStatus(Status.Done, id);
                     _taskService.CompleteTask(id);
                     break;
-                case Status.Suspended:
-                    _statusService.UpdateStatus(Status.InProgress, id);
+                case "pause":
+                    _statusService.UpdateStatus(Status.Suspended, id);
                     break;
             }
             return Json(new { html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) }); ;
@@ -123,18 +128,10 @@ namespace TaskManagement.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult PauseStatus(Status status, int id)
+        public IActionResult ChangeStatusSuspended(int id)
         {
-            switch (status)
-            {
-                case Status.Assigned:
-                    _statusService.UpdateStatus(status, id);
-                    break;
-                case Status.InProgress:
-                    _statusService.UpdateStatus(Status.Suspended, id);
-                    break;
-            }
-            return Json(new { html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
+            _statusService.UpdateStatus(Status.InProgress, id);
+            return Json(new { html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) }); ;
         }
     }
 }

@@ -10,7 +10,7 @@ CreateEditTask = url => {
 }
 
 
-SaveTaskInfo = form => {
+SaveTaskInfo = (form, id = null) => {
         try {
             $.ajax({
                 type: "POST",
@@ -23,7 +23,8 @@ SaveTaskInfo = form => {
                         $("#TreeView").html(res.html);
                         $("#form-modal .modal-body").html('');
                         $("#form-modal").modal('hide');
-                        $('#taskDetails').html('');
+                        if (id != null)
+                            ShowTaskDetails("/Task/Details/" + id);
                     }
                     else
                         $("#form-modal .modal-body").html(res.html);
@@ -80,28 +81,26 @@ DeleteTask = form => {
     return false;
 }
 
-UpdateStatus = form => {
-    if (confirm('sadsa')) {
-        try {
-            $.ajax({
-                type: "POST",
-                url: form.action,
-                data: new FormData(form),
-                contentType: false,
-                processData: false,
-                success: function (res) {
-                    $("#TreeView").html(res.html);
-                    $('#taskDetails').html('');
-                },
-                error: function (err) {
-                    console.log(err)
-                }
+UpdateStatus = (form,id) => {
+    try {
+        $.ajax({
+            type: "POST",
+            url: form.action,
+            data: new FormData(form),
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                $("#TreeView").html(res.html);
+                ShowTaskDetails("/Task/Details/" + id);
+            },
+            error: function (err) {
+                console.log(err)
+            }
 
-            })
-        }
-        catch {
+        })
+    }
+    catch {
 
-        }
     }
     return false;
 }

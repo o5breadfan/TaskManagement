@@ -1,30 +1,9 @@
-﻿@model TaskManagement.Models.DoTask
+﻿@model TaskManagement.ViewModels.DetailViewModel
 @{Layout = null;}
-
-<form>
-    <div class="form-group">
-        <label asp-for="Name" class="control-label"></label>
-        <input asp-for="Name" class="form-control" disabled/>
-    </div>
-    <div class="form-group">
-        <label asp-for="Description" class="control-label"></label>
-        @*@Html.TextAreaFor(m => m.Description, 2, 20, new { @class = "form-control"})*@
-        <textarea asp-for="Description" cols="20" rows="2" class="form-control" disabled></textarea>
-    </div>
-    <div class="form-group">
-        <label asp-for="Executors" class="control-label"></label>
-        <input asp-for="Executors" class="form-control" disabled/>
-    </div>
-    <div class="form-group">
-        <label asp-for="Status" class="control-label"></label>
-        <select asp-items="Html.GetEnumSelectList(typeof(Status))" disabled asp-for="@Model.Status" class="form-select"></select>
-    </div>
-
-</form>
 
 <div class="row">
     <div class="col-4">
-        <button onclick="CreateEditTask('@Url.Action("CreateOrEditTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
+        <button onclick="CreateEditTask('@Url.Action("EditTask","Task",new { id = Model.Id })')" type="button" class="btn btn-primary">
             Изменить задачу
         </button>
     </div>
@@ -39,31 +18,61 @@
         </button>
     </div>
 </div>
-<div class="row">
-    @switch(Model.Status)
-                {
-                    case Status.Assigned:
-                        break;
-                    case Status.InProgress:
-                        break;
-                    case Status.Suspended:
-                        break;
-                }
-                @if (Model.Status != Status.Done)
+<form>
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" disabled/>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" cols="20" rows="2" class="form-control" disabled></textarea>
+    </div>
+    <div class="form-group">
+        <label asp-for="Executors" class="control-label"></label>
+        <input asp-for="Executors" class="form-control" disabled/>
+    </div>
+    <div class="form-group">
+        <label asp-for="Status" class="control-label"></label>
+        <select asp-items="Html.GetEnumSelectList(typeof(Status))" disabled asp-for="@Model.Status" class="form-select"></select>
+    </div>
+    @if (Model.SubTasks.Count != 0)
     {
-        <div class="col-6">
-            <form asp-controller="Task" asp-action="ChangeStatus" asp-route-status="@Model.Status" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this)">
-                <input type="submit" value="Изменить статус задачи на @Model.Status" class="btn btn-primary" />
-            </form>
-        </div>
-        @if (Model.Status != Status.Suspended && Model.Status != Status.Assigned)
-            {
+        <p>Список подзадач</p>
+        @foreach (var subTask in Model.SubTasks)
+        {
+             <p>Название подзадачи: @subTask.Name . Плановое время выполнения: @subTask.PlanTime</p>
+        }
+    }
+</form>
+<div class="row">
+    @switch (Model.Status)
+    {
+        case Status.Assigned:
             <div class="col-6">
-                <form asp-controller="Task" asp-action="PauseStatus" asp-route-status="@Model.Status" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this)">
-                    <input type="submit" value="Приостановить выполнение задачи" class="btn btn-primary" />
+                <form asp-controller="Task" asp-action="ChangeStatusAssign" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this,@Model.Id)">
+                    <input type="submit" value="Начать выполнение" class="btn btn-primary" />
                 </form>
             </div>
-        }
+            break;
+        case Status.InProgress:
+            <div class="col-6">
+                <form asp-controller="Task" asp-action="ChangeStatusProgress" asp-route-button="done" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this,@Model.Id)">
+                    <input type="submit" value="Завершить выполнение" class="btn btn-primary" />
+                </form>
+            </div>
+            <div class="col-6">
+                <form asp-controller="Task" asp-action="ChangeStatusProgress" asp-route-button="pause" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this,@Model.Id)">
+                    <input type="submit" value="Приостановить выполнение" class="btn btn-primary" />
+                </form>
+            </div>
+            break;
+        case Status.Suspended:
+            <div class="col-6">
+                <form asp-controller="Task" asp-action="ChangeStatusSuspended" asp-route-id="@Model.Id" onsubmit="return UpdateStatus(this,@Model.Id)">
+                    <input type="submit" value="Возобновить выполнение" class="btn btn-primary" />
+                </form>
+            </div>
+            break;
     }
 </div>
 

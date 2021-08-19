@@ -1,0 +1,10 @@
+﻿@model TaskManagement.Models.DoTask
+@{Layout = null;}
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="AjaxForm" asp-action="EditTask" asp-route-id="@Model.Id" onsubmit="return SaveTaskInfo(this,@Model.Id);" autocomplete="off">
+            @await Html.PartialAsync("_TaskPartial")
+        </form>
+    </div>
+</div>

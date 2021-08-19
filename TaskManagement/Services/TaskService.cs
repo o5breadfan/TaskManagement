@@ -12,10 +12,12 @@ namespace TaskManagement.Services
     public class TaskService
     {
         private ApplicationContext _applicationContext;
+        private StatusService _statusService;
 
-        public TaskService(ApplicationContext applicationContext)
+        public TaskService(ApplicationContext applicationContext, StatusService statusService)
         {
             _applicationContext = applicationContext;
+            _statusService = statusService;
         }
 
         public SeedTasksViewModel GetListTasks()
@@ -32,10 +34,9 @@ namespace TaskManagement.Services
             return true;
         }
 
-        public bool CreateSubTask(DoTask model,int id)
+        public bool CreateSubTask(DoTask model, int id)
         {
-            var parentTask = GetTask(model.ParentId);
-            //var parentTask1 = model.ParentId;
+            var parentTask = GetTask(id);
             DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = Status.Assigned, PlanTime = model.PlanTime, ParentId = id };
             if (parentTask.PlanTime < GetSumPlanTime(id)+model.PlanTime)
             {
@@ -62,10 +63,13 @@ namespace TaskManagement.Services
 
         public bool DeleteTask(int? id)
         {
-            List<DoTask> task = _applicationContext.Tasks.Where(x => (x.Id == id || x.ParentId == id)).ToList();
-            if (task != null)
+            var currentNode = GetTask(id);
+            List<DoTask> list = new() { currentNode };
+            while ((currentNode = _applicationContext.Tasks.FirstOrDefault(i => i.ParentId == currentNode.Id)) != null)
+                list.Add(currentNode);
+            if (list != null)
             {
-                _applicationContext.RemoveRange(task);
+                _applicationContext.RemoveRange(list);
                 _applicationContext.SaveChanges();
                 return true;
             }
@@ -78,7 +82,7 @@ namespace TaskManagement.Services
             return _applicationContext.Tasks.Find(id);
         }
 
-        public double GetSumPlanTime(int idParent)
+        public double GetSumPlanTime(int? idParent)
         {
             double sum = 0;
             List<DoTask> subTasks = _applicationContext.Tasks.Where(x => x.ParentId == idParent).ToList();
@@ -87,12 +91,17 @@ namespace TaskManagement.Services
             return sum;
         }
 
-        public void CompleteTask(int id)
+        public void CompleteTask(int? id)
         {
             var task = GetTask(id);
             task.DateFinished = DateTime.Now;
             task.FactTime = CalcFactTime(task.DateRegister, DateTime.Now);
             _applicationContext.Update(task);
+            if (task.ParentId != null && _statusService.CheckCompletionStatusSubTasks(task.ParentId))
+            {
+                _statusService.UpdateStatus(Status.Done, task.ParentId);
+                CompleteTask(task.ParentId);
+            }
             _applicationContext.SaveChanges();
 
         }
@@ -100,6 +109,11 @@ namespace TaskManagement.Services
         public double CalcFactTime(DateTime dateRegister, DateTime dateFinished)
         {
             return Math.Round(dateFinished.Subtract(dateRegister).TotalHours);
+        }
+
+        public List<DoTask> GetSubTasksList(int? parentId)
+        {
+            return _applicationContext.Tasks.Where(x => x.ParentId == parentId).ToList();
         }
      
     }
