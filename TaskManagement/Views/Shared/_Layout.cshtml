@@ -1,8 +1,8 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    @await Html.PartialAsync("MetategPartial")
-    @await Html.PartialAsync("CssPartial") 
+    @await Html.PartialAsync("_MetategPartial")
+    @await Html.PartialAsync("_CssPartial") 
 </head>
 <body>
     <header>
@@ -12,7 +12,7 @@
         }
         else
         {
-            @await Html.PartialAsync("HeaderPartial")
+            @await Html.PartialAsync("_HeaderPartial")
         }
     </header>
     <div class="container">
@@ -28,11 +28,11 @@
         }
         else
         {
-            @await Html.PartialAsync("FooterPartial")
+            @await Html.PartialAsync("_FooterPartial")
         }
     </footer>
 
-    @await Html.PartialAsync("ScriptsPartial")
+    @await Html.PartialAsync("_ScriptsPartial")
 
 </body>
 </html>
