@@ -26,18 +26,19 @@ namespace TaskManagement.Services
             return model;
         }
 
-        public bool CreateTask(DoTask model)
+        public bool CreateTask(CreateTaskViewModel model)
         {
-            DoTask task = new DoTask { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = Status.Assigned, PlanTime = model.PlanTime };
+            DoTask task = new DoTask { Name = model.Name, Description = model.Description, Executors = model.Executors, Status = Status.Assigned, PlanTime = model.PlanTime };
             _applicationContext.Add(task);
             _applicationContext.SaveChanges();
             return true;
         }
 
-        public bool CreateSubTask(DoTask model, int id)
+        public bool CreateSubTask(CreateTaskViewModel model)
         {
+            var id = model.ParentId;
             var parentTask = GetTask(id);
-            DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, DateRegister = model.DateRegister, Status = Status.Assigned, PlanTime = model.PlanTime, ParentId = id };
+            DoTask subTask = new() { Name = model.Name, Description = model.Description, Executors = model.Executors, Status = Status.Assigned, PlanTime = model.PlanTime, ParentId = id };
             if (parentTask.PlanTime < GetSumPlanTime(id)+model.PlanTime)
             {
                 parentTask.PlanTime += (GetSumPlanTime(id) + model.PlanTime - parentTask.PlanTime);
@@ -54,9 +55,13 @@ namespace TaskManagement.Services
             return true;
         }
 
-        public bool UpdateTask(DoTask model)
+        public bool UpdateTask(UpdateTaskViewModel viewModel)
         {
-            _applicationContext.Update(model);
+            DoTask task = _applicationContext.Tasks.Find(viewModel.Id);
+            task.Name = viewModel.Name;
+            task.PlanTime = viewModel.PlanTime;
+            task.Executors = viewModel.Executors;
+            task.Description = viewModel.Description;
             _applicationContext.SaveChanges();
             return true;
         }
@@ -80,6 +85,21 @@ namespace TaskManagement.Services
         public DoTask GetTask(int? id)
         {
             return _applicationContext.Tasks.Find(id);
+        }
+
+        public UpdateTaskViewModel GetUpdateTask(int? id)
+        {
+            DoTask doTask =_applicationContext.Tasks.Find(id);
+            UpdateTaskViewModel task = new()
+            {
+                Id = doTask.Id,
+                Name = doTask.Name,
+                Executors = doTask.Executors,
+                Description = doTask.Description,
+                PlanTime = doTask.PlanTime,
+                Status = doTask.Status
+            };
+            return task;
         }
 
         public double GetSumPlanTime(int? idParent)

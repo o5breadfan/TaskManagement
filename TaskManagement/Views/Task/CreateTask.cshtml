@@ -1,10 +1,10 @@
-﻿@model TaskManagement.Models.DoTask
+﻿@model TaskManagement.ViewModels.CreateTaskViewModel
 @{Layout=null;}
 
 <div class="row">
     <div class="col-md-12">
         <form id="AjaxForm" asp-action="CreateTask" onsubmit="return SaveTaskInfo(this);" autocomplete="off">
-            @await Html.PartialAsync("_TaskPartial") 
+            @await Html.PartialAsync("_CreateTaskPartial")
         </form>
     </div>
 </div>

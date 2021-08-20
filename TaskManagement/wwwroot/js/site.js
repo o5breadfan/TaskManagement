@@ -1,8 +1,9 @@
-﻿CreateEditTask = url => {
+﻿CreateEditTask = (url,title) => {
         $.ajax({
             type: "GET",
             url: url,
             success: function (res) {
+                $("#form-modal .modal-title").html(title);
                 $("#form-modal .modal-body").html(res);
                 $("#form-modal").modal('show');
             }
@@ -105,3 +106,12 @@ UpdateStatus = (form,id) => {
     return false;
 }
 
+function expand(elem) {
+    var li = $(elem).parents('li')[0];
+    var ul = $(li).children('ul')[0];
+    $(ul).css('display') == 'none' ? $(ul).show() : $(ul).hide();
+}
+
+document.querySelector('.number').addEventListener('keyup', function () {
+    this.value = this.value.replace(/[^\d]/g, '');
+});

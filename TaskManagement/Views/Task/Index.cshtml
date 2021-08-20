@@ -5,21 +5,23 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="tree"></div>
-
 <div class="row">
-    <div id="TreeView" class="col-6 border-end">
-        @if (Model != null)
-        {
-            @await Html.PartialAsync("_TreeViewPartial")
-        }
+    <div class="col-6 border-end">
+        <button type="button" onclick="CreateEditTask('@Url.Action("CreateTask","Task")','Добавление задачи')" class="btn btn_primary">
+            Создать задачу
+        </button>
+        <div id="TreeView" class="bg-light rounded-1">
+            @if (Model != null)
+            {
+                @await Html.PartialAsync("_TreeViewPartial")
+            }
+        </div>
     </div>
     <div class="col-6 border-start">
         <div id="taskDetails">
 
         </div>
     </div>
-
 </div>
 
 @await Html.PartialAsync("_CreateOrEditTaskModalPartial")

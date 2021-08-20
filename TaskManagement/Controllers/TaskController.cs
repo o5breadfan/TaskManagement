@@ -26,12 +26,12 @@ namespace TaskManagement.Controllers
 
         public IActionResult CreateTask()
         {
-            return View(new DoTask());
+            return View(new CreateTaskViewModel());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateTask(DoTask task)
+        public IActionResult CreateTask(CreateTaskViewModel task)
         {
             if (ModelState.IsValid)
             {
@@ -42,24 +42,24 @@ namespace TaskManagement.Controllers
         }
 
         [HttpGet]
-        public IActionResult EditTask(int id)
+        public IActionResult UpdateTask(int id)
         {
-            var taskModel = _taskService.GetTask(id);
-            if (taskModel == null)
+            UpdateTaskViewModel updateTask = _taskService.GetUpdateTask(id);
+            if (updateTask == null)
                 return NotFound();
-            return View(taskModel);
+            return View(updateTask);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult EditTask(DoTask task, int id)
+        public IActionResult UpdateTask(UpdateTaskViewModel updateTask)
         {
             if (ModelState.IsValid)
             {
-                _taskService.UpdateTask(task);
+                _taskService.UpdateTask(updateTask);
                 return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
             }
-            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "EditTask",task) });
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "UpdateTask", updateTask) });
 
         }
 
@@ -80,25 +80,25 @@ namespace TaskManagement.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateSubTask(int id)
+        public IActionResult CreateSubTask(int parentId)
         {
-            var model = new DoTask() { ParentId = id };
+            var model = new CreateTaskViewModel() { ParentId = parentId };
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateSubTask(DoTask model, int id)
+        public IActionResult CreateSubTask(CreateTaskViewModel model)
         {
             if(ModelState.IsValid)
             {
-                if (_taskService.CreateSubTask(model, id))
+                if (_taskService.CreateSubTask(model))
                     return Json(new { isValid = true, html = Helper.RenderRazorViewToString(this, "_TreeViewPartial", _taskService.GetListTasks()) });
                 else
                     return NotFound();
 
             }
-            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "CreateOrEditTask", model) });
+            return Json(new { isValid = false, html = Helper.RenderRazorViewToString(this, "CreateSubTask", model) });
         }
 
         [HttpPost]

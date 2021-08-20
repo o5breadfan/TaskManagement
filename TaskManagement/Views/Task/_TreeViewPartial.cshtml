@@ -8,10 +8,16 @@
             if (node.ParentId == Model.Seed)
             {
                 TaskManagement.ViewModels.SeedTasksViewModel inner = new TaskManagement.ViewModels.SeedTasksViewModel { Seed = node.Id, Tasks = Model.Tasks };
-                <li>
-                    <a type="button" class = "nodeItem" onclick="ShowTaskDetails('@Url.Action("Details","Task", new { id = @node.Id})')">@node.Name</a>
-                    @await Html.PartialAsync("_TreeViewPartial", inner)
-                </li>
+            <li class="list-unstyled">
+                <div class="drop btn-group my-1" role="group" parent-id="@node.Id">
+                    @if (Model.Tasks.Where(x => x.ParentId == node.Id).Any())
+                    {
+                        <button class="btn btn-light" onclick="expand(this)"><img src="images/arrowpng.png" width="10" height="10" /></button>
+                    }
+                    <button node-id="@node.Id" class="drag btn btn-light" onclick="ShowTaskDetails('@Url.Action("Details","Task", new { id = @node.Id})')">@node.Name</button>
+                </div>
+                @await Html.PartialAsync("_TreeViewPartial", inner)
+            </li>
             }
         }
     </ul>
