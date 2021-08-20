@@ -1,4 +1,4 @@
-﻿CreateEditTask = (url,title) => {
+CreateEditTask = (url,title) => {
         $.ajax({
             type: "GET",
             url: url,

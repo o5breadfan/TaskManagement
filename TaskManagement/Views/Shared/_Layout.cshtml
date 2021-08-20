@@ -1,36 +1,38 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    @await Html.PartialAsync("MetategPartial")
-    @await Html.PartialAsync("CssPartial") 
+    @await Html.PartialAsync("_MetategPartial")
+    @await Html.PartialAsync("_CssPartial") 
 </head>
 <body>
     <header>
-        @if(IsSectionDefined("Header"))
-         {
+        @if (IsSectionDefined("Header"))
+        {
             @RenderSection("Header")
-         }
-         else
-         {
-            @await Html.PartialAsync("HeaderPartial")
-         }
+        }
+        else
+        {
+            @await Html.PartialAsync("_HeaderPartial")
+        }
     </header>
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-
+    
     <footer class="border-top footer text-muted">
-        @if(IsSectionDefined("Footer"))
-         {
+        @if (IsSectionDefined("Footer"))
+        {
             @RenderSection("Footer")
-         }
-         else
-         {
-            @await Html.PartialAsync("FooterPartial")
-         }
+        }
+        else
+        {
+            @await Html.PartialAsync("_FooterPartial")
+        }
     </footer>
-    @await Html.PartialAsync("ScriptsPartial")
+
+    @await Html.PartialAsync("_ScriptsPartial")
+
 </body>
 </html>

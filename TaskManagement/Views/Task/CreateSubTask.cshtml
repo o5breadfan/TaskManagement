@@ -1,0 +1,11 @@
+﻿@model TaskManagement.ViewModels.CreateTaskViewModel
+@{Layout = null;}
+
+<div class="row">
+    <div class="col-md-12">
+        <form id="AjaxForm" asp-action="CreateSubTask" onsubmit="return SaveTaskInfo(this,@Model.ParentId);" autocomplete="off">
+            @Html.HiddenFor(model => model.ParentId)
+            @await Html.PartialAsync("_CreateTaskPartial")
+        </form>
+    </div>
+</div>

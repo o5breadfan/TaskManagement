@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TaskManagement.Models;
+using TaskManagement.Services;
 
 namespace TaskManagement
 {
@@ -28,6 +29,8 @@ namespace TaskManagement
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddControllersWithViews();
             services.AddMvc();
+            services.AddScoped<TaskService>();
+            services.AddScoped<StatusService>();
 
         }
 
@@ -53,7 +56,7 @@ namespace TaskManagement
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                    pattern: "{controller=Task}/{action=Index}/{id?}");
             });
         }
     }
